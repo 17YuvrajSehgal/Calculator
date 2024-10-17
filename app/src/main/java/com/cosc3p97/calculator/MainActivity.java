@@ -25,9 +25,9 @@ public class MainActivity extends AppCompatActivity {
     private Double operandInMemory;
     private EquationCalculator equationCalculator;
 
-    private static final String STATE_PENDING_OPERATION = "";
-    private static final String STATE_OPERAND1 = "";
-    private static final String STATE_TOGGLE_BTN = "";
+    private static final String STATE_PENDING_OPERATION = "PendingOperation";
+    private static final String STATE_OPERAND1 = "Operand1";
+    private static final String STATE_TOGGLE_BTN = "ToggleBasicModeBtn";
 
 
     @Override
@@ -101,27 +101,19 @@ public class MainActivity extends AppCompatActivity {
         if (operand != null) {
             outState.putDouble(STATE_OPERAND1, operand);
         }
-
-        // Save the state of the toggle button
-        outState.putBoolean(STATE_TOGGLE_BTN, toggleBasicModeBtn.isChecked());
-
         super.onSaveInstanceState(outState);
     }
-
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-
-        // Restore the pending operation and operand
         pendingOperation = savedInstanceState.getString(STATE_PENDING_OPERATION);
         operand = savedInstanceState.getDouble(STATE_OPERAND1);
-
-        // Update the operation view with the pending operation
         operationView.setText(pendingOperation);
 
         // Retrieve and apply the saved toggle button state
         boolean isToggleOn = savedInstanceState.getBoolean(STATE_TOGGLE_BTN, false);
+        System.out.println("here ->" +pendingOperation +" "+operand+" "+isToggleOn);
         toggleBasicModeBtn.setChecked(isToggleOn);
         if (isToggleOn) {
             setViewForScientific();
@@ -192,9 +184,13 @@ public class MainActivity extends AppCompatActivity {
 
             if (basicScientificSwitch.isChecked()) {    //if the current mode is scientific
                 setViewForScientific();
+                //reset the input, output and operations box
+                resetViewsAndOperands();
 
             } else {    //if current mode is set to basic again:
                 setViewForBasic();
+                //reset the input, output and operations box
+                resetViewsAndOperands();
             }
         };
     }
@@ -206,8 +202,7 @@ public class MainActivity extends AppCompatActivity {
         buttonRightParen.setVisibility(View.VISIBLE);
         // Change newNumberView input type to text
         newNumberView.setInputType(InputType.TYPE_CLASS_TEXT);
-        //reset the input, output and operations box
-        resetViewsAndOperands();
+
         //set the operations listener back to scientific mode
         setOperationListener(scientificOperationsListener);
     }
@@ -219,8 +214,7 @@ public class MainActivity extends AppCompatActivity {
         buttonRightParen.setVisibility(View.GONE);
         // Change newNumberView input type back to signed number
         newNumberView.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED);
-        //reset the input, output and operations box
-        resetViewsAndOperands();
+
         //set the operations listener back to normal mode
         setOperationListener(operationListener);
     }
