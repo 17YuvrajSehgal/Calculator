@@ -73,8 +73,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
     private void performOperation(Double value, String operation) {
         if (operand == null) {
             operand = value;
@@ -119,23 +117,26 @@ public class MainActivity extends AppCompatActivity {
                 operationView.setVisibility(View.GONE);
                 // Change newNumberView input type to text
                 newNumberView.setInputType(InputType.TYPE_CLASS_TEXT);
-                buttonAdd.setOnClickListener(scientificOperationsListener);
-                buttonSub.setOnClickListener(scientificOperationsListener);
-                buttonMultiply.setOnClickListener(scientificOperationsListener);
-                buttonDivide.setOnClickListener(scientificOperationsListener);
-                buttonEquals.setOnClickListener(scientificOperationsListener);
+                resetViewsAndOperands();
+                setOperationListener(scientificOperationsListener);
+
 
             } else {
-                // If the switch is OFF, show the TextView
+                // If the switch is OFF, bring back the TextView and reset the input box
                 operationView.setVisibility(View.VISIBLE);
+                resetViewsAndOperands();
+                // Change newNumberView input type back to signed number
                 newNumberView.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED);
-                buttonAdd.setOnClickListener(operationListener);
-                buttonSub.setOnClickListener(operationListener);
-                buttonMultiply.setOnClickListener(operationListener);
-                buttonDivide.setOnClickListener(operationListener);
-                buttonEquals.setOnClickListener(operationListener);
+                setOperationListener(operationListener);
             }
         };
+    }
+
+    private void resetViewsAndOperands() {
+        operationView.setText("=");
+        resultView.setText("");
+        newNumberView.setText("");
+        this.operand = (double) 0;
     }
 
     private View.OnClickListener getScientificOperationListener() {
