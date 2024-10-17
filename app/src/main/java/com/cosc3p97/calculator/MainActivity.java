@@ -112,21 +112,24 @@ public class MainActivity extends AppCompatActivity {
             // Ensure you are correctly referencing the Switch
             Switch basicScientificSwitch = (Switch) view;
 
-            if (basicScientificSwitch.isChecked()) {
+            if (basicScientificSwitch.isChecked()) {    //if the current mode is scientific
                 // If the switch is ON, hide the TextView
                 operationView.setVisibility(View.GONE);
                 // Change newNumberView input type to text
                 newNumberView.setInputType(InputType.TYPE_CLASS_TEXT);
+                //reset the input, output and operations box
                 resetViewsAndOperands();
+                //set the operations listener back to scientific mode
                 setOperationListener(scientificOperationsListener);
 
-
-            } else {
-                // If the switch is OFF, bring back the TextView and reset the input box
+            } else {    //if current mode is set to basic again:
+                // If the switch is OFF, bring back the TextView  for operations
                 operationView.setVisibility(View.VISIBLE);
-                resetViewsAndOperands();
                 // Change newNumberView input type back to signed number
                 newNumberView.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED);
+                //reset the input, output and operations box
+                resetViewsAndOperands();
+                //set the operations listener back to normal mode
                 setOperationListener(operationListener);
             }
         };
