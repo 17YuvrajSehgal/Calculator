@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         this.memoryRetrieveListener = getMemoryRetrieveListener();
         setDigitListener(this.digitListener);
         buttonAllClear.setOnClickListener(getAllClearListener());
+        buttonCorrect.setOnClickListener(getCorrectListener());
         setOperationListener(this.operationListener);
         buttonSaved.setOnClickListener(this.memoryListener);
         buttonRetrieve.setOnClickListener(this.memoryRetrieveListener);
@@ -125,11 +126,25 @@ public class MainActivity extends AppCompatActivity {
         return view -> {
             operand = 0.0;
             pendingOperation = "=";
-            operandInMemory=0.0;
+            operandInMemory = 0.0;
             newNumberView.setText("");
             resultView.setText("");
         };
     }
+
+    private View.OnClickListener getCorrectListener() {
+        return view -> {
+            String currentText = newNumberView.getText().toString();
+
+            // Check if the text is not empty before deleting the last character
+            if (!currentText.isEmpty()) {
+                // Remove the last character
+                String updatedText = currentText.substring(0, currentText.length() - 1);
+                newNumberView.setText(updatedText);
+            }
+        };
+    }
+
 
 
     private View.OnClickListener getToggleSwitchListener() {
