@@ -250,10 +250,10 @@ public class MainActivity extends AppCompatActivity {
         View.OnClickListener memoryStoreListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println("old memory: "+operandInMemory);
-                if(operand!=null)
+                System.out.println("old memory: " + operandInMemory);
+                if (operand != null)
                     operandInMemory = operand;
-                System.out.println("new memory: "+operandInMemory);
+                System.out.println("new memory: " + operandInMemory);
             }
         };
         return memoryStoreListener;
@@ -263,8 +263,8 @@ public class MainActivity extends AppCompatActivity {
         View.OnClickListener memoryRetrieveListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(operand!=null){
-                    System.out.println("retrieved memory: "+operandInMemory);
+                if (operand != null) {
+                    System.out.println("retrieved memory: " + operandInMemory);
                     operand = operandInMemory;
                     newNumberView.setText(operand.toString());
                 }
