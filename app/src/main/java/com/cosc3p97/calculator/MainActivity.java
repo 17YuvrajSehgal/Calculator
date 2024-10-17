@@ -86,12 +86,9 @@ public class MainActivity extends AppCompatActivity {
                     operand = value;
                     break;
                 case "/":
-                    if (value == 0) {
-                        operand = 0.0;
-                    } else {
-                        operand /= value;
-                    }
+                    operand = (value == 0) ? Double.POSITIVE_INFINITY : operand / value;
                     break;
+
                 case "*":
                     operand *= value;
                     break;
@@ -145,9 +142,29 @@ public class MainActivity extends AppCompatActivity {
     private View.OnClickListener getScientificOperationListener() {
         return view -> {
             Button button = (Button) view;
-            newNumberView.append(button.getText().toString());
+            String buttonText = button.getText().toString();
+            String currentText = newNumberView.getText().toString();
+
+            // Check if the last character is already an operation
+            if (isLastCharacterOperation(currentText)) {
+                // Replace the last operation with the new one
+                currentText = currentText.substring(0, currentText.length() - 1);
+                newNumberView.setText(currentText);
+            }
+
+            // Append the new operation
+            newNumberView.append(buttonText);
         };
     }
+
+    // Helper method to determine if the last character is an operator
+    private boolean isLastCharacterOperation(String text) {
+        if (text.isEmpty()) return false;
+
+        char lastChar = text.charAt(text.length() - 1);
+        return "+-*/".indexOf(lastChar) != -1;  // Valid operators
+    }
+
 
     private void setOperationListener(View.OnClickListener operationListener) {
         buttonAdd.setOnClickListener(operationListener);
