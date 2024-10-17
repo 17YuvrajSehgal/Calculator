@@ -82,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
         setOperationListener(this.operationListener);
         buttonSaved.setOnClickListener(this.memoryListener);
         buttonRetrieve.setOnClickListener(this.memoryRetrieveListener);
+        buttonLeftParen.setOnClickListener(scientificOperationsListener);
+        buttonRightParen.setOnClickListener(scientificOperationsListener);
 
         toggleBasicModeBtn.setOnClickListener(this.toggleModeSwitchListener);
 
@@ -173,15 +175,22 @@ public class MainActivity extends AppCompatActivity {
                     resultView.setText("Error");
                 }
                 newNumberView.setText("");
+                return;
             }
-            // Check if the last character is already an operation
+
+            // Check if the button is a parenthesis
+            if (buttonText.equals("(") || buttonText.equals(")")) {
+                newNumberView.append(buttonText);
+                return;
+            }
+
+            // Handle replacing the last operation if necessary
             if (isLastCharacterOperation(currentText)) {
-                // Replace the last operation with the new one
                 currentText = currentText.substring(0, currentText.length() - 1);
                 newNumberView.setText(currentText);
             }
 
-            // Append the new operation
+            // Append the new operation or digit
             newNumberView.append(buttonText);
         };
     }
@@ -189,10 +198,10 @@ public class MainActivity extends AppCompatActivity {
     // Helper method to determine if the last character is an operator
     private boolean isLastCharacterOperation(String text) {
         if (text.isEmpty()) return false;
-
         char lastChar = text.charAt(text.length() - 1);
-        return "+-*/".indexOf(lastChar) != -1;
+        return "+-*/".indexOf(lastChar) != -1;  // Valid operators
     }
+
 
     private View.OnClickListener getMemoryStoreListener() {
         View.OnClickListener memoryStoreListener = new View.OnClickListener() {
