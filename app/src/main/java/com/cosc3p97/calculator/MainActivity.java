@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private Double operand;
     private String pendingOperation = "=";
     private Button button0, button1, button2, button3, button4, button5, button6, button7, button8, button9;
-    private View buttonDecimal, buttonAdd, buttonSub, buttonMultiply, buttonDivide, buttonEquals, buttonSaved, buttonRetrieve, buttonLeftParen, buttonRightParen;
+    private View buttonDecimal, buttonAdd, buttonSub, buttonMultiply, buttonDivide, buttonEquals, buttonSaved, buttonRetrieve, buttonLeftParen, buttonRightParen, buttonAllClear, buttonCorrect;
     private Switch toggleBasicModeBtn;
     private View.OnClickListener digitListener, memoryListener, operationListener, scientificOperationsListener, toggleModeSwitchListener, memoryRetrieveListener;
     private Double operandInMemory;
@@ -59,8 +59,11 @@ public class MainActivity extends AppCompatActivity {
         this.buttonEquals = findViewById(R.id.buttonEquals);
         this.buttonLeftParen = findViewById(R.id.buttonLeftParenthesis);
         this.buttonRightParen = findViewById(R.id.buttonRightParenthesis);
-        buttonLeftParen.setVisibility(View.GONE);
-        buttonRightParen.setVisibility(View.GONE);
+        this.buttonLeftParen.setVisibility(View.GONE);
+        this.buttonRightParen.setVisibility(View.GONE);
+
+        this.buttonAllClear = findViewById(R.id.buttonAllClear);
+        this.buttonCorrect = findViewById(R.id.buttonCorrect);
 
         //basic mode toggle switch
         this.toggleBasicModeBtn = findViewById(R.id.buttonBS);
@@ -77,14 +80,13 @@ public class MainActivity extends AppCompatActivity {
         this.memoryListener = getMemoryStoreListener();
         this.memoryRetrieveListener = getMemoryRetrieveListener();
         setDigitListener(this.digitListener);
+        buttonAllClear.setOnClickListener(getAllClearListener());
         setOperationListener(this.operationListener);
         buttonSaved.setOnClickListener(this.memoryListener);
         buttonRetrieve.setOnClickListener(this.memoryRetrieveListener);
         buttonLeftParen.setOnClickListener(scientificOperationsListener);
         buttonRightParen.setOnClickListener(scientificOperationsListener);
-
         toggleBasicModeBtn.setOnClickListener(this.toggleModeSwitchListener);
-
 
     }
 
@@ -118,6 +120,17 @@ public class MainActivity extends AppCompatActivity {
         resultView.setText(operand.toString());
         newNumberView.setText("");
     }
+
+    private View.OnClickListener getAllClearListener() {
+        return view -> {
+            operand = 0.0;
+            pendingOperation = "=";
+            operandInMemory=0.0;
+            newNumberView.setText("");
+            resultView.setText("");
+        };
+    }
+
 
     private View.OnClickListener getToggleSwitchListener() {
         return view -> {
