@@ -11,8 +11,6 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.Stack;
-
 public class MainActivity extends AppCompatActivity {
 
     private EditText resultView, newNumberView;
