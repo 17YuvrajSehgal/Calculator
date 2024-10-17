@@ -11,6 +11,8 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.Stack;
+
 public class MainActivity extends AppCompatActivity {
 
     private EditText resultView, newNumberView;
@@ -18,12 +20,10 @@ public class MainActivity extends AppCompatActivity {
     private Double operand;
     private String pendingOperation = "=";
     private Button button0, button1, button2, button3, button4, button5, button6, button7, button8, button9;
-    private View buttonDecimal, buttonAdd, buttonSub, buttonMultiply, buttonDivide, buttonEquals;
+    private View buttonDecimal, buttonAdd, buttonSub, buttonMultiply, buttonDivide, buttonEquals, buttonSaved, buttonRetrieve;
     private Switch toggleBasicModeBtn;
-    private View.OnClickListener digitListener;
-    private View.OnClickListener operationListener;
-    private View.OnClickListener scientificOperationsListener;
-    private View.OnClickListener toggleModeSwitchListener;
+    private View.OnClickListener digitListener, memoryListener, operationListener, scientificOperationsListener, toggleModeSwitchListener, memoryRetrieveListener;
+    private Double operandInMemory;
 
     private static final String STATE_PENDING_OPERATION = "PendingOperation";
     private static final String STATE_OPERAND1 = "Operand1";
@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        operandInMemory = (double) 0;
 
         this.resultView = findViewById(R.id.result);
         this.newNumberView = findViewById(R.id.newNumber);
@@ -58,14 +60,21 @@ public class MainActivity extends AppCompatActivity {
         this.buttonEquals = findViewById(R.id.buttonEquals);
         //basic mode toggle switch
         this.toggleBasicModeBtn = findViewById(R.id.buttonBS);
+        //memory buttons
+        this.buttonSaved = findViewById(R.id.buttonStore);
+        this.buttonRetrieve = findViewById(R.id.buttonRetrieve);
 
         this.digitListener = getDigitListener();
         this.operationListener = getOperationListener();
         this.scientificOperationsListener = getScientificOperationListener();
         this.toggleModeSwitchListener = getToggleSwitchListener();
+        this.memoryListener = getMemoryStoreListener();
+        this.memoryRetrieveListener = getMemoryRetrieveListener();
 
         setDigitListener(this.digitListener);
         setOperationListener(this.operationListener);
+        buttonSaved.setOnClickListener(this.memoryListener);
+        buttonRetrieve.setOnClickListener(this.memoryRetrieveListener);
 
         toggleBasicModeBtn.setOnClickListener(this.toggleModeSwitchListener);
 
@@ -145,6 +154,15 @@ public class MainActivity extends AppCompatActivity {
             String buttonText = button.getText().toString();
             String currentText = newNumberView.getText().toString();
 
+            if (buttonText.equals("=")) {
+                try {
+                    double result = calculateExpression(currentText);
+                    resultView.setText(String.valueOf(result));
+                } catch (Exception e) {
+                    resultView.setText("Error");
+                }
+                newNumberView.setText("");
+            }
             // Check if the last character is already an operation
             if (isLastCharacterOperation(currentText)) {
                 // Replace the last operation with the new one
@@ -162,7 +180,101 @@ public class MainActivity extends AppCompatActivity {
         if (text.isEmpty()) return false;
 
         char lastChar = text.charAt(text.length() - 1);
-        return "+-*/".indexOf(lastChar) != -1;  // Valid operators
+        return "+-*/".indexOf(lastChar) != -1;
+    }
+
+
+    // New method to evaluate the final expression with PEMDAS
+    private double calculateExpression(String expression) {
+        Stack<Double> numbers = new Stack<>();
+        Stack<Character> operators = new Stack<>();
+
+        int i = 0;
+        while (i < expression.length()) {
+            char c = expression.charAt(i);
+
+            // If it's a digit or decimal point, extract the complete number
+            if (Character.isDigit(c) || c == '.') {
+                StringBuilder number = new StringBuilder();
+                while (i < expression.length() &&
+                        (Character.isDigit(expression.charAt(i)) || expression.charAt(i) == '.')) {
+                    number.append(expression.charAt(i++));
+                }
+                numbers.push(Double.parseDouble(number.toString()));
+                continue;  // Avoid incrementing `i` again
+            }
+
+            // If it's an operator, process precedence
+            if ("+-*/".indexOf(c) != -1) {
+                while (!operators.isEmpty() && hasPrecedence(c, operators.peek())) {
+                    numbers.push(applyOperator(operators.pop(), numbers.pop(), numbers.pop()));
+                }
+                operators.push(c);
+            }
+            i++;
+        }
+
+        // Complete remaining operations in the stacks
+        while (!operators.isEmpty()) {
+            numbers.push(applyOperator(operators.pop(), numbers.pop(), numbers.pop()));
+        }
+
+        // Final result
+        return numbers.pop();
+    }
+
+    // Helper method to determine operator precedence
+    private boolean hasPrecedence(char op1, char op2) {
+        if ((op1 == '*' || op1 == '/') && (op2 == '+' || op2 == '-')) {
+            return false;
+        }
+        return true;
+    }
+
+    // Helper method to apply an operator to two operands
+    private double applyOperator(char operator, double b, double a) {
+        switch (operator) {
+            case '+':
+                return a + b;
+            case '-':
+                return a - b;
+            case '*':
+                return a * b;
+            case '/':
+                return (b == 0) ? Double.POSITIVE_INFINITY : a / b;
+        }
+        return 0;
+    }
+
+    private View.OnClickListener getMemoryStoreListener() {
+        View.OnClickListener memoryStoreListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("old memory: "+operandInMemory);
+                if(operand!=null)
+                    operandInMemory = operand;
+                System.out.println("new memory: "+operandInMemory);
+            }
+        };
+        return memoryStoreListener;
+    }
+
+    private View.OnClickListener getMemoryRetrieveListener() {
+        View.OnClickListener memoryRetrieveListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(operand!=null){
+                    System.out.println("retrieved memory: "+operandInMemory);
+                    operand = operandInMemory;
+                    newNumberView.setText(operand.toString());
+                }
+            }
+        };
+        return memoryRetrieveListener;
+    }
+
+    private void setMemoryListener(View.OnClickListener memoryListener) {
+        buttonSaved.setOnClickListener(memoryListener);
     }
 
 
