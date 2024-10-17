@@ -20,10 +20,11 @@ public class MainActivity extends AppCompatActivity {
     private Double operand;
     private String pendingOperation = "=";
     private Button button0, button1, button2, button3, button4, button5, button6, button7, button8, button9;
-    private View buttonDecimal, buttonAdd, buttonSub, buttonMultiply, buttonDivide, buttonEquals, buttonSaved, buttonRetrieve;
+    private View buttonDecimal, buttonAdd, buttonSub, buttonMultiply, buttonDivide, buttonEquals, buttonSaved, buttonRetrieve, buttonLeftParen, buttonRightParen;
     private Switch toggleBasicModeBtn;
     private View.OnClickListener digitListener, memoryListener, operationListener, scientificOperationsListener, toggleModeSwitchListener, memoryRetrieveListener;
     private Double operandInMemory;
+    private EquationCalculator equationCalculator;
 
     private static final String STATE_PENDING_OPERATION = "PendingOperation";
     private static final String STATE_OPERAND1 = "Operand1";
@@ -58,19 +59,25 @@ public class MainActivity extends AppCompatActivity {
         this.buttonMultiply = findViewById(R.id.buttonMultiply);
         this.buttonDivide = findViewById(R.id.buttonDivide);
         this.buttonEquals = findViewById(R.id.buttonEquals);
+        this.buttonLeftParen = findViewById(R.id.buttonLeftParenthesis);
+        this.buttonRightParen = findViewById(R.id.buttonRightParenthesis);
+        buttonLeftParen.setVisibility(View.GONE);
+        buttonRightParen.setVisibility(View.GONE);
+
         //basic mode toggle switch
         this.toggleBasicModeBtn = findViewById(R.id.buttonBS);
         //memory buttons
         this.buttonSaved = findViewById(R.id.buttonStore);
         this.buttonRetrieve = findViewById(R.id.buttonRetrieve);
 
+
+        //set listeners
         this.digitListener = getDigitListener();
         this.operationListener = getOperationListener();
         this.scientificOperationsListener = getScientificOperationListener();
         this.toggleModeSwitchListener = getToggleSwitchListener();
         this.memoryListener = getMemoryStoreListener();
         this.memoryRetrieveListener = getMemoryRetrieveListener();
-
         setDigitListener(this.digitListener);
         setOperationListener(this.operationListener);
         buttonSaved.setOnClickListener(this.memoryListener);
@@ -97,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
                 case "/":
                     operand = (value == 0) ? Double.POSITIVE_INFINITY : operand / value;
                     break;
-
                 case "*":
                     operand *= value;
                     break;
@@ -121,6 +127,8 @@ public class MainActivity extends AppCompatActivity {
             if (basicScientificSwitch.isChecked()) {    //if the current mode is scientific
                 // If the switch is ON, hide the TextView
                 operationView.setVisibility(View.GONE);
+                buttonLeftParen.setVisibility(View.VISIBLE);
+                buttonRightParen.setVisibility(View.VISIBLE);
                 // Change newNumberView input type to text
                 newNumberView.setInputType(InputType.TYPE_CLASS_TEXT);
                 //reset the input, output and operations box
@@ -131,6 +139,8 @@ public class MainActivity extends AppCompatActivity {
             } else {    //if current mode is set to basic again:
                 // If the switch is OFF, bring back the TextView  for operations
                 operationView.setVisibility(View.VISIBLE);
+                buttonLeftParen.setVisibility(View.GONE);
+                buttonRightParen.setVisibility(View.GONE);
                 // Change newNumberView input type back to signed number
                 newNumberView.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED);
                 //reset the input, output and operations box
@@ -156,7 +166,8 @@ public class MainActivity extends AppCompatActivity {
 
             if (buttonText.equals("=")) {
                 try {
-                    double result = calculateExpression(currentText);
+                    equationCalculator = new EquationCalculator(currentText);
+                    double result = Double.parseDouble(equationCalculator.equals());
                     resultView.setText(String.valueOf(result));
                 } catch (Exception e) {
                     resultView.setText("Error");
@@ -181,69 +192,6 @@ public class MainActivity extends AppCompatActivity {
 
         char lastChar = text.charAt(text.length() - 1);
         return "+-*/".indexOf(lastChar) != -1;
-    }
-
-
-    // New method to evaluate the final expression with PEMDAS
-    private double calculateExpression(String expression) {
-        Stack<Double> numbers = new Stack<>();
-        Stack<Character> operators = new Stack<>();
-
-        int i = 0;
-        while (i < expression.length()) {
-            char c = expression.charAt(i);
-
-            // If it's a digit or decimal point, extract the complete number
-            if (Character.isDigit(c) || c == '.') {
-                StringBuilder number = new StringBuilder();
-                while (i < expression.length() &&
-                        (Character.isDigit(expression.charAt(i)) || expression.charAt(i) == '.')) {
-                    number.append(expression.charAt(i++));
-                }
-                numbers.push(Double.parseDouble(number.toString()));
-                continue;  // Avoid incrementing `i` again
-            }
-
-            // If it's an operator, process precedence
-            if ("+-*/".indexOf(c) != -1) {
-                while (!operators.isEmpty() && hasPrecedence(c, operators.peek())) {
-                    numbers.push(applyOperator(operators.pop(), numbers.pop(), numbers.pop()));
-                }
-                operators.push(c);
-            }
-            i++;
-        }
-
-        // Complete remaining operations in the stacks
-        while (!operators.isEmpty()) {
-            numbers.push(applyOperator(operators.pop(), numbers.pop(), numbers.pop()));
-        }
-
-        // Final result
-        return numbers.pop();
-    }
-
-    // Helper method to determine operator precedence
-    private boolean hasPrecedence(char op1, char op2) {
-        if ((op1 == '*' || op1 == '/') && (op2 == '+' || op2 == '-')) {
-            return false;
-        }
-        return true;
-    }
-
-    // Helper method to apply an operator to two operands
-    private double applyOperator(char operator, double b, double a) {
-        switch (operator) {
-            case '+':
-                return a + b;
-            case '-':
-                return a - b;
-            case '*':
-                return a * b;
-            case '/':
-                return (b == 0) ? Double.POSITIVE_INFINITY : a / b;
-        }
-        return 0;
     }
 
     private View.OnClickListener getMemoryStoreListener() {

@@ -11,7 +11,7 @@
         android:id="@+id/result"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:ems="10"
@@ -19,8 +19,9 @@
         android:focusableInTouchMode="false"
         android:inputType="number|numberDecimal|numberSigned"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonBS" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/buttonBS"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/newNumber"
@@ -86,6 +87,25 @@
         android:text="="
         app:layout_constraintBaseline_toBaselineOf="@+id/buttonRetrieve"
         app:layout_constraintEnd_toStartOf="@+id/buttonRetrieve" />
+
+    <Button
+        android:id="@+id/buttonLeftParenthesis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="60dp"
+        android:text="("
+        app:layout_constraintBaseline_toBaselineOf="@+id/buttonRightParenthesis"
+        app:layout_constraintEnd_toEndOf="@+id/buttonRetrieve" />
+
+    <Button
+        android:id="@+id/buttonRightParenthesis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:minWidth="60dp"
+        android:text=")"
+        app:layout_constraintStart_toStartOf="@+id/buttonCorrect"
+        app:layout_constraintTop_toBottomOf="@+id/buttonCorrect" />
 
     <Button
         android:id="@+id/button4"
@@ -257,10 +277,8 @@
         android:id="@+id/buttonBS"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Switch"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginStart="16dp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/result"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
