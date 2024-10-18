@@ -16,18 +16,19 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText resultView, newNumberView;
     private TextView operationView;
-    private Double operand;
+    private Double operand, operandInMemory;
     private String pendingOperation = "=";
     private Button button0, button1, button2, button3, button4, button5, button6, button7, button8, button9;
     private View buttonDecimal, buttonAdd, buttonSub, buttonMultiply, buttonDivide, buttonEquals, buttonSaved, buttonRetrieve, buttonLeftParen, buttonRightParen, buttonAllClear, buttonCorrect;
     private Switch toggleBasicModeBtn;
     private View.OnClickListener digitListener, memoryListener, operationListener, scientificOperationsListener, toggleModeSwitchListener, memoryRetrieveListener;
-    private Double operandInMemory;
+
     private EquationCalculator equationCalculator;
 
     private static final String STATE_PENDING_OPERATION = "PendingOperation";
     private static final String STATE_OPERAND1 = "Operand1";
     private static final String STATE_TOGGLE_BTN = "ToggleBasicModeBtn";
+    private static final String STATE_MEMORY_OPERAND = "OperandInMemory";
 
 
     @Override
@@ -98,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putString(STATE_PENDING_OPERATION, pendingOperation);
         outState.putBoolean(STATE_TOGGLE_BTN, toggleBasicModeBtn.isChecked());
+        outState.putDouble(STATE_MEMORY_OPERAND, operandInMemory);
         if (operand != null) {
             outState.putDouble(STATE_OPERAND1, operand);
         }
@@ -110,10 +112,11 @@ public class MainActivity extends AppCompatActivity {
         pendingOperation = savedInstanceState.getString(STATE_PENDING_OPERATION);
         operand = savedInstanceState.getDouble(STATE_OPERAND1);
         operationView.setText(pendingOperation);
+        operandInMemory = savedInstanceState.getDouble(STATE_MEMORY_OPERAND);
 
         // Retrieve and apply the saved toggle button state
         boolean isToggleOn = savedInstanceState.getBoolean(STATE_TOGGLE_BTN, false);
-        System.out.println("here ->" +pendingOperation +" "+operand+" "+isToggleOn);
+        System.out.println("here ->" + pendingOperation + " " + operand + " " + isToggleOn);
         toggleBasicModeBtn.setChecked(isToggleOn);
         if (isToggleOn) {
             setViewForScientific();
