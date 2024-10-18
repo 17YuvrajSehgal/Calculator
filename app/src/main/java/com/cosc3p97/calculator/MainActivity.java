@@ -256,15 +256,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Creates an OnClickListener that removes the last character from the current input number.
+     * This listener is intended to be used with a "Correct" or "Backspace" button.
+     *
+     * @return A View.OnClickListener that updates the input number by removing the last character.
+     */
     private View.OnClickListener getCorrectListener() {
         return view -> {
+            // Get the current text displayed in the new number input field.
             String currentText = newNumberView.getText().toString();
 
-            // Check if the text is not empty before deleting the last character
+            // Check if the text is not empty before attempting to delete the last character.
             if (!currentText.isEmpty()) {
-                // Remove the last character
+                // Remove the last character from the current text.
                 String updatedText = currentText.substring(0, currentText.length() - 1);
-                newNumberView.setText(updatedText);
+                newNumberView.setText(updatedText); // Update the input field with the new text.
+            }
+            // Optional: Display a Toast confirming the character removal (for better UX).
+            else {
+                Toast.makeText(view.getContext(), "Nothing to correct", Toast.LENGTH_SHORT).show();
             }
         };
     }
