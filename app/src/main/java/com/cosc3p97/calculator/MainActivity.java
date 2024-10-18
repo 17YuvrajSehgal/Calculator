@@ -170,42 +170,64 @@ public class MainActivity extends AppCompatActivity {
      * @param value     The new value to be used in the operation.
      * @param operation The operation to perform, such as "+", "-", "*", "/", or "=".
      *                  If "=" is provided, the operand will be replaced by the new value.
+     *                  If the operation or value is invalid, the method will show a Toast message.
      */
     private void performOperation(Double value, String operation) {
-        // If operand is not yet initialized, set it to the provided value.
+        // Check if the operation or value is null, and show a Toast if invalid.
+        if (operation == null || value == null) {
+            Toast.makeText(MainActivity.this, "Invalid input", Toast.LENGTH_SHORT).show();
+            return; // Exit early if inputs are invalid.
+        }
+
+        // If no operand exists, initialize it with the provided value.
         if (operand == null) {
             operand = value;
         } else {
-            // If the pending operation is "=", set the next operation to the given one.
+            // If the previous operation was "=", use the new operation for further calculations.
             if (pendingOperation.equals("=")) {
                 pendingOperation = operation;
             }
 
-            // Perform the operation based on the pendingOperation value.
+            // Perform the operation based on the pending operation.
             switch (pendingOperation) {
                 case "=":
-                    operand = value;
+                    operand = value; // Simply set the operand to the new value.
                     break;
+
                 case "/":
-                    // Handle division by zero gracefully by returning positive infinity.
-                    operand = (value == 0) ? Double.POSITIVE_INFINITY : operand / value;
+                    // Handle division by zero with an error message.
+                    if (value == 0) {
+                        resultView.setText("Error: Divide by 0");
+                        return; // Exit early to avoid further processing.
+                    }
+                    operand /= value; // Perform division.
                     break;
+
                 case "*":
-                    operand *= value;
+                    operand *= value; // Perform multiplication.
                     break;
+
                 case "+":
-                    operand += value;
+                    operand += value; // Perform addition.
                     break;
+
                 case "-":
-                    operand -= value;
+                    operand -= value; // Perform subtraction.
                     break;
+
+                default:
+                    // Handle any unexpected operations gracefully.
+                    Toast.makeText(MainActivity.this, "Invalid operation", Toast.LENGTH_SHORT).show();
+                    return; // Exit early for invalid operations.
             }
         }
+
         // Update the result view with the new operand value.
         resultView.setText(operand.toString());
-        // Clear the new number input field.
+        // Clear the new number input field to prepare for the next input.
         newNumberView.setText("");
     }
+
 
 
     private View.OnClickListener getAllClearListener() {
