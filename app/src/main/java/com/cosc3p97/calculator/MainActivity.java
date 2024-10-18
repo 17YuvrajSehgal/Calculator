@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String STATE_MEMORY_OPERAND = "OperandInMemory";
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putString(STATE_PENDING_OPERATION, pendingOperation);
@@ -229,7 +227,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     /**
      * Creates an OnClickListener that resets all calculator values to their initial state.
      * This listener is intended to be used with an "All Clear" (AC) button.
@@ -281,23 +278,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Creates an OnClickListener that toggles between basic and scientific calculator modes.
+     * This listener is intended to be used with a toggle switch.
+     *
+     * @return A View.OnClickListener that updates the calculator view based on the selected mode.
+     */
     private View.OnClickListener getToggleSwitchListener() {
         return view -> {
-            // Ensure you are correctly referencing the Switch
+            // Cast the view to a Switch to access its properties and methods.
             Switch basicScientificSwitch = (Switch) view;
 
-            if (basicScientificSwitch.isChecked()) {    //if the current mode is scientific
-                setViewForScientific();
-                //reset the input, output and operations box
+            // Check if the switch is in the "scientific" mode (checked).
+            if (basicScientificSwitch.isChecked()) {
+                setViewForScientific(); // Switch to scientific mode view.
+                // Reset the input, output, and operations box for a clean start.
                 resetViewsAndOperands();
-
-            } else {    //if current mode is set to basic again:
-                setViewForBasic();
-                //reset the input, output and operations box
+            } else { // If the switch is in "basic" mode (unchecked):
+                setViewForBasic(); // Switch to basic mode view.
+                // Reset the input, output, and operations box for a clean start.
                 resetViewsAndOperands();
             }
+            // Optional: Provide feedback to the user about the mode change (for better UX).
+            Toast.makeText(view.getContext(),
+                    basicScientificSwitch.isChecked() ? "Switched to Scientific Mode" : "Switched to Basic Mode",
+                    Toast.LENGTH_SHORT).show();
         };
     }
+
 
     public void setViewForScientific() {
         // If the switch is ON, hide the TextView
