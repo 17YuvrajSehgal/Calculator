@@ -19,10 +19,9 @@ public class MainActivity extends AppCompatActivity {
     private Double operand, operandInMemory;
     private String pendingOperation = "=";
     private Button button0, button1, button2, button3, button4, button5, button6, button7, button8, button9;
-    private View buttonDecimal, buttonAdd, buttonSub, buttonMultiply, buttonDivide, buttonEquals, buttonSaved, buttonRetrieve, buttonLeftParen, buttonRightParen, buttonAllClear, buttonCorrect;
+    private Button buttonDecimal, buttonAdd, buttonSub, buttonMultiply, buttonDivide, buttonEquals, buttonSaved, buttonRetrieve, buttonLeftParen, buttonRightParen, buttonAllClear, buttonCorrect;
     private Switch toggleBasicModeBtn;
     private View.OnClickListener digitListener, memoryListener, operationListener, scientificOperationsListener, toggleModeSwitchListener, memoryRetrieveListener;
-
     private EquationCalculator equationCalculator;
 
     private static final String STATE_PENDING_OPERATION = "PendingOperation";
