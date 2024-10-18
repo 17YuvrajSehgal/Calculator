@@ -13,6 +13,14 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * MainActivity is the entry point of the calculator application.
+ * It handles user interactions, including button clicks for digits and
+ * operations. The activity is responsible for displaying the current
+ * input and results on the screen. It utilizes the EquationCalculator
+ * class to evaluate mathematical expressions and update the user interface
+ * accordingly.
+ */
 public class MainActivity extends AppCompatActivity {
 
     private EditText resultView, newNumberView;
