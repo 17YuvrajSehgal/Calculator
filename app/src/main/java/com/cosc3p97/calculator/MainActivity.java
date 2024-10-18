@@ -148,13 +148,19 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
+        // Save the current pending operation (e.g., addition, subtraction).
         outState.putString(STATE_PENDING_OPERATION, pendingOperation);
+        // Save the current value displayed in the new number view.
         outState.putString(STATE_PENDING_OPERAND, String.valueOf(newNumberView.getText()));
+        // Save the state of the toggle button (Basic/Scientific mode).
         outState.putBoolean(STATE_TOGGLE_BTN, toggleBasicModeBtn.isChecked());
+        // Save the value of the operand in memory.
         outState.putDouble(STATE_MEMORY_OPERAND, operandInMemory);
+        // Save the first operand if it is not null.
         if (operand != null) {
             outState.putDouble(STATE_OPERAND1, operand);
         }
+        // Call the superclass implementation to save any other state.
         super.onSaveInstanceState(outState);
     }
 
@@ -165,20 +171,28 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        // Call the superclass implementation to restore the state.
         super.onRestoreInstanceState(savedInstanceState);
+        // Retrieve the saved pending operation and update the UI.
         pendingOperation = savedInstanceState.getString(STATE_PENDING_OPERATION);
+        // Retrieve the saved first operand and store it.
         operand = savedInstanceState.getDouble(STATE_OPERAND1);
+        // Update the operation view to display the pending operation.
         operationView.setText(pendingOperation);
+        // Retrieve the saved operand in memory.
         operandInMemory = savedInstanceState.getDouble(STATE_MEMORY_OPERAND);
+        // Retrieve the saved pending operand (the current displayed value).
         String pendingOperand = savedInstanceState.getString(STATE_PENDING_OPERAND);
-        // Retrieve and apply the saved toggle button state
+        // Retrieve and apply the saved toggle button state to update UI.
         boolean isToggleOn = savedInstanceState.getBoolean(STATE_TOGGLE_BTN, false);
         toggleBasicModeBtn.setChecked(isToggleOn);
+        // Set the appropriate view based on the toggle state.
         if (isToggleOn) {
             setViewForScientific();
         } else {
             setViewForBasic();
         }
+        // Restore the displayed number in the new number view.
         newNumberView.setText(pendingOperand);
     }
 
