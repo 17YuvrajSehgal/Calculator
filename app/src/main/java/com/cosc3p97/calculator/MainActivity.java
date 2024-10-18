@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -21,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private Button button0, button1, button2, button3, button4, button5, button6, button7, button8, button9;
     private Button buttonDecimal, buttonAdd, buttonSub, buttonMultiply, buttonDivide, buttonEquals, buttonSaved, buttonRetrieve, buttonLeftParen, buttonRightParen, buttonAllClear, buttonCorrect;
     private Switch toggleBasicModeBtn;
-    private View.OnClickListener digitListener, memoryListener, operationListener, scientificOperationsListener, toggleModeSwitchListener, memoryRetrieveListener;
+    private View.OnClickListener digitListener, memoryListener, operationListener, scientificOperationsListener, toggleModeSwitchListener, memoryRetrieveListener, allClearListener, correctListener;
     private EquationCalculator equationCalculator;
 
     private static final String STATE_PENDING_OPERATION = "PendingOperation";
@@ -30,18 +31,32 @@ public class MainActivity extends AppCompatActivity {
     private static final String STATE_MEMORY_OPERAND = "OperandInMemory";
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-
         operandInMemory = (double) 0;
+        initializeViews();
+        initializeListeners();
 
+    }
+
+    /**
+     * Initializes the view components of the calculator app by binding
+     * the UI elements defined in the layout file (activity_main.xml)
+     * to their corresponding Java objects. This method sets up
+     * references for display elements, digit buttons, operator buttons,
+     * memory buttons, and toggle switches.
+     */
+    public void initializeViews() {
+        // Initialize display components
         this.resultView = findViewById(R.id.result);
         this.newNumberView = findViewById(R.id.newNumber);
         this.operationView = findViewById(R.id.operation);
-        //digits buttons
+
+        // Initialize digit buttons
         this.button0 = findViewById(R.id.button0);
         this.button1 = findViewById(R.id.button1);
         this.button2 = findViewById(R.id.button2);
@@ -52,46 +67,71 @@ public class MainActivity extends AppCompatActivity {
         this.button7 = findViewById(R.id.button7);
         this.button8 = findViewById(R.id.button8);
         this.button9 = findViewById(R.id.button9);
-        //operators button
+
+        // Initialize operator buttons
         this.buttonDecimal = findViewById(R.id.buttonDecimal);
         this.buttonAdd = findViewById(R.id.buttonAdd);
         this.buttonSub = findViewById(R.id.buttonSub);
         this.buttonMultiply = findViewById(R.id.buttonMultiply);
         this.buttonDivide = findViewById(R.id.buttonDivide);
         this.buttonEquals = findViewById(R.id.buttonEquals);
+
+        // Initialize parentheses buttons and set their visibility
         this.buttonLeftParen = findViewById(R.id.buttonLeftParenthesis);
         this.buttonRightParen = findViewById(R.id.buttonRightParenthesis);
         this.buttonLeftParen.setVisibility(View.GONE);
         this.buttonRightParen.setVisibility(View.GONE);
 
+        // Initialize all-clear and correction buttons
         this.buttonAllClear = findViewById(R.id.buttonAllClear);
         this.buttonCorrect = findViewById(R.id.buttonCorrect);
 
-        //basic mode toggle switch
+        // Initialize basic mode toggle switch
         this.toggleBasicModeBtn = findViewById(R.id.buttonBS);
-        //memory buttons
+
+        // Initialize memory function buttons
         this.buttonSaved = findViewById(R.id.buttonStore);
         this.buttonRetrieve = findViewById(R.id.buttonRetrieve);
+    }
 
 
-        //set listeners
+    /**
+     * Initializes the listeners for all the buttons and other interactive elements
+     * in the calculator app. This method assigns appropriate OnClickListener instances
+     * to each button, enabling them to respond to user actions.
+     */
+    public void initializeListeners() {
         this.digitListener = getDigitListener();
         this.operationListener = getOperationListener();
         this.scientificOperationsListener = getScientificOperationListener();
         this.toggleModeSwitchListener = getToggleSwitchListener();
         this.memoryListener = getMemoryStoreListener();
         this.memoryRetrieveListener = getMemoryRetrieveListener();
+        this.allClearListener = getAllClearListener();
+        this.correctListener = getCorrectListener();
+
+        // Set digit listener for number buttons
         setDigitListener(this.digitListener);
-        buttonAllClear.setOnClickListener(getAllClearListener());
-        buttonCorrect.setOnClickListener(getCorrectListener());
+
+        // Set operation listener for basic and scientific operations
         setOperationListener(this.operationListener);
+
+        // Assign OnClickListener for clear and correct buttons
+        buttonAllClear.setOnClickListener(this.allClearListener);
+        buttonCorrect.setOnClickListener(this.correctListener);
+
+        // Assign listeners for memory functions
         buttonSaved.setOnClickListener(this.memoryListener);
         buttonRetrieve.setOnClickListener(this.memoryRetrieveListener);
-        buttonLeftParen.setOnClickListener(scientificOperationsListener);
-        buttonRightParen.setOnClickListener(scientificOperationsListener);
-        toggleBasicModeBtn.setOnClickListener(this.toggleModeSwitchListener);
 
+        // Assign listeners for scientific operation buttons
+        buttonLeftParen.setOnClickListener(this.scientificOperationsListener);
+        buttonRightParen.setOnClickListener(this.scientificOperationsListener);
+
+        // Assign listener for mode toggle button
+        toggleBasicModeBtn.setOnClickListener(this.toggleModeSwitchListener);
     }
+
 
 
     @Override
@@ -115,7 +155,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Retrieve and apply the saved toggle button state
         boolean isToggleOn = savedInstanceState.getBoolean(STATE_TOGGLE_BTN, false);
-        System.out.println("here ->" + pendingOperation + " " + operand + " " + isToggleOn);
         toggleBasicModeBtn.setChecked(isToggleOn);
         if (isToggleOn) {
             setViewForScientific();
@@ -272,31 +311,25 @@ public class MainActivity extends AppCompatActivity {
 
 
     private View.OnClickListener getMemoryStoreListener() {
-        View.OnClickListener memoryStoreListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                System.out.println("old memory: " + operandInMemory);
-                if (operand != null)
-                    operandInMemory = operand;
-                System.out.println("new memory: " + operandInMemory);
+        return view -> {
+            if (operand != null) {
+                operandInMemory = operand;
+                Toast.makeText(MainActivity.this, "Stored in memory: " + operandInMemory, Toast.LENGTH_SHORT).show();
             }
         };
-        return memoryStoreListener;
     }
 
+
     private View.OnClickListener getMemoryRetrieveListener() {
-        View.OnClickListener memoryRetrieveListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (operand != null) {
-                    System.out.println("retrieved memory: " + operandInMemory);
-                    operand = operandInMemory;
-                    newNumberView.setText(operand.toString());
-                }
+        return view -> {
+            if (operand != null) {
+                operand = operandInMemory;
+                newNumberView.setText(operand.toString());
+                Toast.makeText(MainActivity.this, "Retrieved from memory: " + operandInMemory, Toast.LENGTH_SHORT).show();
             }
         };
-        return memoryRetrieveListener;
     }
+
 
     private void setMemoryListener(View.OnClickListener memoryListener) {
         buttonSaved.setOnClickListener(memoryListener);
