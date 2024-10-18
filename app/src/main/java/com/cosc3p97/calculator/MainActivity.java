@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private EquationCalculator equationCalculator;
 
     private static final String STATE_PENDING_OPERATION = "PendingOperation";
+    private static final String STATE_PENDING_OPERAND = "PendingOperand";
     private static final String STATE_OPERAND1 = "Operand1";
     private static final String STATE_TOGGLE_BTN = "ToggleBasicModeBtn";
     private static final String STATE_MEMORY_OPERAND = "OperandInMemory";
@@ -140,9 +141,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Saves the current state of the activity to the provided Bundle.
+     *
+     * @param outState The Bundle in which to save the activity state.
+     */
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putString(STATE_PENDING_OPERATION, pendingOperation);
+        outState.putString(STATE_PENDING_OPERAND, String.valueOf(newNumberView.getText()));
         outState.putBoolean(STATE_TOGGLE_BTN, toggleBasicModeBtn.isChecked());
         outState.putDouble(STATE_MEMORY_OPERAND, operandInMemory);
         if (operand != null) {
@@ -151,6 +158,11 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
     }
 
+    /**
+     * Restores the state of the activity from the provided Bundle.
+     *
+     * @param savedInstanceState The Bundle containing the saved state of the activity.
+     */
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
@@ -158,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
         operand = savedInstanceState.getDouble(STATE_OPERAND1);
         operationView.setText(pendingOperation);
         operandInMemory = savedInstanceState.getDouble(STATE_MEMORY_OPERAND);
-
+        String pendingOperand = savedInstanceState.getString(STATE_PENDING_OPERAND);
         // Retrieve and apply the saved toggle button state
         boolean isToggleOn = savedInstanceState.getBoolean(STATE_TOGGLE_BTN, false);
         toggleBasicModeBtn.setChecked(isToggleOn);
@@ -167,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             setViewForBasic();
         }
+        newNumberView.setText(pendingOperand);
     }
 
 
