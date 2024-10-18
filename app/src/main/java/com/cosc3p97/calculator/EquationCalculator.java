@@ -3,6 +3,7 @@ package com.cosc3p97.calculator;
 import java.math.BigDecimal;
 
 /**
+ * Reference: https://github.com/Jhunrel25/PEMDAS-Calculator-Program/blob/main/Calculator.java
  * This class is responsible for evaluating mathematical expressions
  * provided in the form of strings. It supports various operations
  * including addition, subtraction, multiplication, division,
