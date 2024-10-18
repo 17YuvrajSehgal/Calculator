@@ -164,19 +164,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Performs the specified arithmetic operation on the current operand and the provided value.
+     *
+     * @param value     The new value to be used in the operation.
+     * @param operation The operation to perform, such as "+", "-", "*", "/", or "=".
+     *                  If "=" is provided, the operand will be replaced by the new value.
+     */
     private void performOperation(Double value, String operation) {
+        // If operand is not yet initialized, set it to the provided value.
         if (operand == null) {
             operand = value;
         } else {
+            // If the pending operation is "=", set the next operation to the given one.
             if (pendingOperation.equals("=")) {
                 pendingOperation = operation;
             }
 
+            // Perform the operation based on the pendingOperation value.
             switch (pendingOperation) {
                 case "=":
                     operand = value;
                     break;
                 case "/":
+                    // Handle division by zero gracefully by returning positive infinity.
                     operand = (value == 0) ? Double.POSITIVE_INFINITY : operand / value;
                     break;
                 case "*":
@@ -190,9 +201,12 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
         }
+        // Update the result view with the new operand value.
         resultView.setText(operand.toString());
+        // Clear the new number input field.
         newNumberView.setText("");
     }
+
 
     private View.OnClickListener getAllClearListener() {
         return view -> {
