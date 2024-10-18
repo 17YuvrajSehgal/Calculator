@@ -230,15 +230,31 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    /**
+     * Creates an OnClickListener that resets all calculator values to their initial state.
+     * This listener is intended to be used with an "All Clear" (AC) button.
+     *
+     * @return A View.OnClickListener that clears the operand, pending operation, memory, and UI elements.
+     */
     private View.OnClickListener getAllClearListener() {
         return view -> {
+            // Reset operand and memory values to their initial states.
             operand = 0.0;
-            pendingOperation = "=";
             operandInMemory = 0.0;
-            newNumberView.setText("");
-            resultView.setText("");
+
+            // Set the pending operation to "=" to indicate no ongoing operation.
+            pendingOperation = "=";
+
+            // Clear the input fields on the UI.
+            newNumberView.setText(""); // Clear the input number field.
+            resultView.setText("");    // Clear the result display.
+            operationView.setText("=");//reset the operation view to =
+
+            // Optional: Display a Toast confirming the reset (for better UX).
+            Toast.makeText(view.getContext(), "All cleared", Toast.LENGTH_SHORT).show();
         };
     }
+
 
     private View.OnClickListener getCorrectListener() {
         return view -> {
@@ -359,8 +375,7 @@ public class MainActivity extends AppCompatActivity {
     private View.OnClickListener getMemoryRetrieveListener() {
         return view -> {
             if (operand != null) {
-                operand = operandInMemory;
-                newNumberView.setText(operand.toString());
+                newNumberView.setText(operandInMemory.toString());
                 Toast.makeText(MainActivity.this, "Retrieved from memory: " + operandInMemory, Toast.LENGTH_SHORT).show();
             }
         };
