@@ -307,106 +307,188 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Configures the calculator view for scientific mode.
+     * This method updates the visibility of various UI elements
+     * and adjusts the input type to allow for scientific calculations.
+     */
     public void setViewForScientific() {
-        // If the switch is ON, hide the TextView
+        // Hide the operation view when in scientific mode
         operationView.setVisibility(View.GONE);
+
+        // Show the parentheses buttons, as they are relevant in scientific calculations
         buttonLeftParen.setVisibility(View.VISIBLE);
         buttonRightParen.setVisibility(View.VISIBLE);
-        // Change newNumberView input type to text
+
+        // Change the newNumberView input type to text to allow for scientific notation
         newNumberView.setInputType(InputType.TYPE_CLASS_TEXT);
 
-        //set the operations listener back to scientific mode
+        // Set the operations listener to handle scientific operations
         setOperationListener(scientificOperationsListener);
+
+        // Optional: Clear the input display to avoid confusion when switching modes
+        newNumberView.setText("");
     }
 
+
+    /**
+     * Configures the calculator view for basic mode.
+     * This method updates the visibility of various UI elements
+     * and adjusts the input type to allow for basic calculations.
+     */
     private void setViewForBasic() {
-        // If the switch is OFF, bring back the TextView  for operations
+        // Show the operation view when switching to basic mode
         operationView.setVisibility(View.VISIBLE);
+
+        // Hide the parentheses buttons, as they are not needed in basic calculations
         buttonLeftParen.setVisibility(View.GONE);
         buttonRightParen.setVisibility(View.GONE);
-        // Change newNumberView input type back to signed number
+
+        // Change the newNumberView input type back to allow signed numbers only
         newNumberView.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED);
 
-        //set the operations listener back to normal mode
+        // Set the operations listener to handle normal (basic) operations
         setOperationListener(operationListener);
+
+        // Optional: Clear the input display to avoid confusion when switching modes
+        newNumberView.setText("");
     }
 
+
+    /**
+     * Resets the calculator's display and operands to their initial state.
+     * This method clears the operation view, result view, and input field,
+     * and resets the operand to zero.
+     */
     private void resetViewsAndOperands() {
+        // Reset the operation display to the default state
         operationView.setText("=");
+
+        // Clear the result and input fields
         resultView.setText("");
         newNumberView.setText("");
-        this.operand = (double) 0;
+
+        // Reset the operand to zero
+        this.operand = 0.0;  // Use 0.0 for clarity as a double type
     }
 
+
+    /**
+     * Returns an OnClickListener for scientific operation buttons.
+     * Handles operations based on the button clicked, including
+     * evaluating equations, appending parentheses, and managing
+     * the input text.
+     *
+     * @return An OnClickListener that processes scientific operations.
+     */
     private View.OnClickListener getScientificOperationListener() {
         return view -> {
-            Button button = (Button) view;
-            String buttonText = button.getText().toString();
-            String currentText = newNumberView.getText().toString();
+            Button button = (Button) view;  // Cast the view to a Button
+            String buttonText = button.getText().toString();  // Get the button text
+            String currentText = newNumberView.getText().toString();  // Get current input text
 
+            // Handle evaluation when the "=" button is pressed
             if (buttonText.equals("=")) {
                 try {
-                    equationCalculator = new EquationCalculator(currentText);
-                    double result = Double.parseDouble(equationCalculator.equals());
-                    resultView.setText(String.valueOf(result));
+                    equationCalculator = new EquationCalculator(currentText);  // Create an equation calculator instance
+                    double result = Double.parseDouble(equationCalculator.equals());  // Evaluate the equation
+                    resultView.setText(String.valueOf(result));  // Display the result
                 } catch (Exception e) {
-                    resultView.setText("Error");
+                    resultView.setText("Error");  // Display error message on exception
                 }
-                newNumberView.setText("");
-                return;
+                newNumberView.setText("");  // Clear input after evaluation
+                return;  // Exit the listener
             }
 
             // Check if the button is a parenthesis
             if (buttonText.equals("(") || buttonText.equals(")")) {
-                newNumberView.append(buttonText);
-                return;
+                newNumberView.append(buttonText);  // Append parenthesis to input
+                return;  // Exit the listener
             }
 
             // Handle replacing the last operation if necessary
             if (isLastCharacterOperation(currentText)) {
-                currentText = currentText.substring(0, currentText.length() - 1);
-                newNumberView.setText(currentText);
+                currentText = currentText.substring(0, currentText.length() - 1);  // Remove the last character if it's an operation
+                newNumberView.setText(currentText);  // Update input text
             }
 
             // Append the new operation or digit
-            newNumberView.append(buttonText);
+            newNumberView.append(buttonText);  // Add the new button text to the input
         };
     }
 
-    // Helper method to determine if the last character is an operator
+
+    /**
+     * Helper method to determine if the last character of the given text is an operator.
+     *
+     * @param text The input string to check.
+     * @return true if the last character is an operator (+, -, *, /); false otherwise.
+     */
     private boolean isLastCharacterOperation(String text) {
-        if (text.isEmpty()) return false;
-        char lastChar = text.charAt(text.length() - 1);
-        return "+-*/".indexOf(lastChar) != -1;  // Valid operators
+        if (text.isEmpty()) return false;  // Return false if the text is empty
+        char lastChar = text.charAt(text.length() - 1);  // Get the last character of the text
+        return "+-*/".indexOf(lastChar) != -1;  // Check if the last character is a valid operator
     }
 
 
+    /**
+     * OnClickListener for storing the current operand value in memory.
+     *
+     * This listener checks if the current operand is not null,
+     * and if valid, stores it in the operandInMemory variable
+     * and shows a toast message indicating the value stored.
+     *
+     * @return A View.OnClickListener that handles memory storage functionality.
+     */
     private View.OnClickListener getMemoryStoreListener() {
         return view -> {
+            // Check if the operand is not null before storing it in memory
             if (operand != null) {
-                operandInMemory = operand;
+                operandInMemory = operand;  // Store the current operand value in memory
                 Toast.makeText(MainActivity.this, "Stored in memory: " + operandInMemory, Toast.LENGTH_SHORT).show();
+            } else {
+                // Optionally handle the case where operand is null
+                Toast.makeText(MainActivity.this, "No value to store in memory.", Toast.LENGTH_SHORT).show();
             }
         };
     }
 
 
+    /**
+     * OnClickListener for retrieving the stored value from memory.
+     *
+     * This listener checks if the operandInMemory has a value,
+     * and if valid, sets it as the current input in newNumberView
+     * and shows a toast message indicating the retrieved value.
+     *
+     * @return A View.OnClickListener that handles memory retrieval functionality.
+     */
     private View.OnClickListener getMemoryRetrieveListener() {
         return view -> {
-            if (operand != null) {
+            // Check if operandInMemory has a value to retrieve
+            if (operandInMemory != null) {
+                // Set the retrieved value as the current input
                 newNumberView.setText(operandInMemory.toString());
                 Toast.makeText(MainActivity.this, "Retrieved from memory: " + operandInMemory, Toast.LENGTH_SHORT).show();
+            } else {
+                // Optionally handle the case where there is nothing stored in memory
+                Toast.makeText(MainActivity.this, "No value in memory to retrieve.", Toast.LENGTH_SHORT).show();
             }
         };
     }
 
 
-    private void setMemoryListener(View.OnClickListener memoryListener) {
-        buttonSaved.setOnClickListener(memoryListener);
-    }
-
-
+    /**
+     * Sets the provided operation listener for all operation buttons.
+     *
+     * This method assigns the given OnClickListener to the buttons
+     * for addition, subtraction, multiplication, division, and equals
+     * operations, allowing them to share the same click behavior.
+     *
+     * @param operationListener The OnClickListener to be set for operation buttons.
+     */
     private void setOperationListener(View.OnClickListener operationListener) {
+        // Assign the operation listener to each operation button
         buttonAdd.setOnClickListener(operationListener);
         buttonSub.setOnClickListener(operationListener);
         buttonMultiply.setOnClickListener(operationListener);
@@ -414,25 +496,50 @@ public class MainActivity extends AppCompatActivity {
         buttonEquals.setOnClickListener(operationListener);
     }
 
+
+    /**
+     * Returns an OnClickListener for handling operations (e.g., +, -, *, /).
+     * This listener retrieves the operation from the clicked button,
+     * fetches the current input value, and performs the specified
+     * operation on it. If the input value is invalid, it clears the input.
+     *
+     * @return An OnClickListener for operation buttons.
+     */
     private View.OnClickListener getOperationListener() {
         return view -> {
+            // Get the button that was clicked
             Button button = (Button) view;
-            String operation = button.getText().toString();
-            String value = newNumberView.getText().toString();
+            String operation = button.getText().toString();  // Get the operation text
+            String value = newNumberView.getText().toString();  // Get the current input value
 
             try {
+                // Attempt to convert the input value to a Double
                 Double doubleValue = Double.valueOf(value);
+                // Perform the operation with the parsed double value
                 performOperation(doubleValue, operation);
             } catch (NumberFormatException e) {
+                // Clear the input field if the value is not a valid number
                 newNumberView.setText("");
             }
 
+            // Update the pending operation and the operation view
             pendingOperation = operation;
             operationView.setText(pendingOperation);
         };
     }
 
+    /**
+     * Sets the provided OnClickListener for all digit buttons (0-9)
+     * and the decimal button.
+     *
+     * This method binds the digitListener to each button so that
+     * they will execute the same action when clicked, allowing for
+     * easy handling of digit inputs.
+     *
+     * @param digitListener The OnClickListener to be set for digit buttons.
+     */
     private void setDigitListener(View.OnClickListener digitListener) {
+        // Set the digit listener for each digit button
         button0.setOnClickListener(digitListener);
         button1.setOnClickListener(digitListener);
         button2.setOnClickListener(digitListener);
@@ -446,12 +553,26 @@ public class MainActivity extends AppCompatActivity {
         buttonDecimal.setOnClickListener(digitListener);
     }
 
+
+    /**
+     * Returns an OnClickListener for digit buttons that appends the
+     * digit represented by the button to the newNumberView when clicked.
+     *
+     * This listener can be set on any button representing a digit (0-9)
+     * or a decimal point, allowing for seamless user input of numbers.
+     *
+     * @return An OnClickListener that appends the digit to newNumberView.
+     */
     private View.OnClickListener getDigitListener() {
         return view -> {
+            // Cast the view to a Button to get the digit's text
             Button button = (Button) view;
+
+            // Append the text of the button (the digit) to newNumberView
             newNumberView.append(button.getText().toString());
         };
     }
+
 
 
 }
